@@ -10580,7 +10580,7 @@ namespace std {
     template<class It, class End>
       constexpr span(It first, End last);
     template<size_t N>
-      constexpr span(element_type (&arr)[N]) noexcept;
+      constexpr span(type_identity_t<element_type> (&arr)[N]) noexcept;
     template<size_t N>
       constexpr span(array<value_type, N>& arr) noexcept;
     template<size_t N>
@@ -10753,7 +10753,7 @@ When and what \tcode{last - first} throws.
 
 \indexlibraryctor{span}%
 \begin{itemdecl}
-template<size_t N> constexpr span(element_type (&arr)[N]) noexcept;
+template<size_t N> constexpr span(type_identity_t<element_type> (&arr)[N]) noexcept;
 template<size_t N> constexpr span(array<value_type, N>& arr) noexcept;
 template<size_t N> constexpr span(const array<value_type, N>& arr) noexcept;
 \end{itemdecl}
@@ -10769,6 +10769,9 @@ template<size_t N> constexpr span(const array<value_type, N>& arr) noexcept;
 \pnum
 \effects
 Constructs a \tcode{span} that is a view over the supplied array.
+\begin{note}
+\tcode{type_identity_t} affects class template argument deduction.
+\end{note}
 
 \pnum
 \ensures
