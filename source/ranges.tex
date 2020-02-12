@@ -614,27 +614,29 @@ object\iref{customization.point.object}. The expression
 \item
   Otherwise, if
   \tcode{disable_sized_range<remove_cv_t<T>>}\iref{range.sized}
-  is \tcode{false}:
-  \begin{itemize}
-  \item
-    \tcode{\placeholdernc{decay-copy}(E.size())}
-    if it is a valid expression and its type \tcode{I}
-    is integer-like\iref{iterator.concept.winc}.
-
-  \item
-    Otherwise, \tcode{\placeholdernc{decay-copy}(size(E))}
-    if it is a valid expression and its type \tcode{I}
-    is integer-like
-    with overload resolution performed in a context that includes
-    the declaration:
-\begin{codeblock}
-template<class T> void size(T&&) = delete;
-\end{codeblock}
-    and does not include a declaration of \tcode{ranges::size}.
-  \end{itemize}
+  is \tcode{false} and
+  \tcode{\placeholdernc{decay-copy}(E.size())}
+  is a valid expression of
+  integer-like type\iref{iterator.concept.winc},
+  \tcode{\placeholdernc{decay-copy}(E.size())}.
 
 \item
-  Otherwise, \tcode{\placeholdernc{to-unsigned-like}(ranges::end(E) - ranges::begin(E))}\iref{range.subrange}
+  Otherwise, if
+  \tcode{disable_sized_range<remove_cv_t<T>>}
+  is \tcode{false} and
+  \tcode{\placeholdernc{decay-copy}(size(E))}
+  is a valid expression of
+  integer-like type
+  with overload resolution performed in a context that includes
+  the declaration:
+\begin{codeblock}
+void size(auto &&) = delete;
+\end{codeblock}
+  and does not include a declaration of \tcode{ranges::size},
+  \tcode{\placeholdernc{decay-copy}(E.size())}.
+
+\item
+  Otherwise, \tcode{\placeholdernc{to-unsigned-like}(ranges::end(E) - ranges::begin(E))}\iref{ranges.syn}
   if it is a valid expression and
   the types \tcode{I} and \tcode{S} of \tcode{ranges::begin(E)} and
   \tcode{ranges::end(E)} (respectively) model both
