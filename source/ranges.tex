@@ -62,6 +62,8 @@ namespace std::ranges {
     using sentinel_t = decltype(ranges::end(declval<R&>()));
   template<range R>
     using range_difference_t = iter_difference_t<iterator_t<R>>;
+  template<sized_range R>
+    using range_size_t = decltype(ranges::size(declval<R&>()));
   template<range R>
     using range_value_t = iter_value_t<iterator_t<R>>;
   template<range R>
@@ -173,10 +175,12 @@ namespace std::ranges {
     basic_istream_view<Val, CharT, Traits> istream_view(basic_istream<CharT, Traits>& s);
 
   // \ref{range.all}, all view
-  namespace views { inline constexpr @\unspec@ all = @\unspec@; }
+  namespace views {
+    inline constexpr @\unspec@ all = @\unspec@;
 
-  template<viewable_range R>
-    using all_view = decltype(views::all(declval<R>()));
+    template<viewable_range R>
+      using all_t = decltype(all(declval<R>()));
+  }
 
   template<range R>
     requires is_object_v<R>
