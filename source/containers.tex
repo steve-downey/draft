@@ -3120,6 +3120,12 @@ namespace std {
   // \ref{array}, class template \tcode{array}
   template<class T, size_t N> struct array;
 
+template<class T, size_t N>
+  constexpr bool operator==(const array<T, N>& x, const array<T, N>& y);
+template<class T, size_t N>
+  constexpr @\placeholder{synth-three-way-result}@<T>
+    operator<=>(const array<T, N>& x, const array<T, N>& y);
+
   template<class T, size_t N>
     constexpr void swap(array<T, N>& x, array<T, N>& y) noexcept(noexcept(x.swap(y)));
 
@@ -3378,10 +3384,6 @@ namespace std {
 
     constexpr T *       data() noexcept;
     constexpr const T * data() const noexcept;
-
-    friend constexpr bool operator==(const array&, const array&) = default;
-    friend constexpr @\placeholder{synth-three-way-result}@<value_type>
-      operator<=>(const array&, const array&);
   };
 
   template<class T, class... U>
