@@ -10277,9 +10277,10 @@ with a \tcode{\exposid{STATICALLY-WIDEN}<charT>("-")} character sequence
 placed before the replacement of the leftmost conversion specifier.
 \begin{example}
 \begin{codeblock}
-cout << format("{\%:T}", -10'000s);                                  // prints: \tcode{-02:46:40}
-cout << format("{:\%H:\%M:\%S}", -10'000s);                            // prints: \tcode{-02:46:40}
-cout << format("{:minutes \%M, hours \%H, seconds \%S}", -10'000s);    // prints: \tcode{minutes -46, hours 02, seconds 40}
+cout << format("{%:T}", -10000s);           // prints: \tcode{-02:46:40}
+cout << format("{:%H:%M:%S}", -10000s);     // prints: \tcode{-02:46:40}
+cout << format("{:minutes %M, hours %H, seconds %S}", -10000s);
+                                            // prints: \tcode{minutes -46, hours 02, seconds 40}
 \end{codeblock}
 \end{example}
 
