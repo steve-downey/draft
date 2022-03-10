@@ -289,6 +289,25 @@ The \grammarterm{universal-character-name} construct provides a way to name
 other characters.
 
 \begin{bnf}
+\nontermdef{n-char}: one of\br
+    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\br
+    0 1 2 3 4 5 6 7 8 9\br
+    U+002D HYPHEN-MINUS\br
+    U+0020 SPACE\br
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{n-char-sequence}:\br
+    n-char\br
+    n-char-sequence n-char\br
+\end{bnf}
+
+\begin{bnf}
+\nontermdef{named-universal-character}:\br
+    \terminal{\textbackslash N} {n-char-sequence}\br
+\end{bnf}
+
+\begin{bnf}
 \nontermdef{hex-quad}\br
     hexadecimal-digit hexadecimal-digit hexadecimal-digit hexadecimal-digit
 \end{bnf}
@@ -296,15 +315,133 @@ other characters.
 \begin{bnf}
 \nontermdef{universal-character-name}\br
     \terminal{\textbackslash u} hex-quad\br
-    \terminal{\textbackslash U} hex-quad hex-quad
+    \terminal{\textbackslash U} hex-quad hex-quad\br
+    named-universal-character
 \end{bnf}
 
+\pnum
 A \grammarterm{universal-character-name}
+of the form \textbackslash u \grammarterm{hex-quad} or \textbackslash U
+\grammarterm{hex-quad} \grammarterm{hex-quad}
 designates the character in the translation character set
 whose UCS scalar value is the hexadecimal number represented by
 the sequence of \grammarterm{hexadecimal-digit}s
 in the \grammarterm{universal-character-name}.
 The program is ill-formed if that number is not a UCS scalar value.
+
+\pnum
+A \grammarterm{universal-character-name} that is a
+\grammarterm{named-universal-character} designates the
+character named by its \grammarterm{n-char-sequence}. A character is so named if the
+\grammarterm{n-char-sequence} is equal to
+\begin{itemize}
+\item the associated character name or associated character name alias specified in
+ ISO/IEC 10646 subclause "Code charts and lists of character names" or
+\item the control code alias given in Table X.
+\end{itemize}
+
+\begin{note}
+The aliases in table X are provided for control characters which
+otherwise have no associated character name or character name alias. These
+names are derived from the Unicode Character Database's \texttt{NameAliases.txt}. For
+historical reasons, control characters are formally unnamed.
+\end{note}
+
+\begin{LongTable}{Control Code Aliases}{lex.charset.aliases}{ll}
+\\ \topline
+\lhdr{Code point} & \rhdr{Control Code Alias} \\ \capsep
+\endfirsthead
+\continuedcaption \\
+\hline
+\lhdr{Code point} & \rhdr{Control Code Alias} \\ \capsep
+\endhead
+\ucode{0000} & \uname{NULL} \\ \rowsep
+\ucode{0001} & \uname{START OF HEADING} \\ \rowsep
+\ucode{0002} & \uname{START OF TEXT} \\ \rowsep
+\ucode{0003} & \uname{END OF TEXT} \\ \rowsep
+\ucode{0004} & \uname{END OF TRANSMISSION} \\ \rowsep
+\ucode{0005} & \uname{ENQUIRY} \\ \rowsep
+\ucode{0006} & \uname{ACKNOWLEDGE} \\ \rowsep
+\ucode{0007} & \uname{ALERT} \\ \rowsep
+\ucode{0008} & \uname{BACKSPACE} \\ \rowsep
+\ucode{0009} & \uname{CHARACTER TABULATION} \\ \rowsep
+\ucode{0009} & \uname{HORIZONTAL TABULATION} \\ \rowsep
+\ucode{000A} & \uname{LINE FEED} \\ \rowsep
+\ucode{000A} & \uname{NEW LINE} \\ \rowsep
+\ucode{000A} & \uname{END OF LINE} \\ \rowsep
+\ucode{000B} & \uname{LINE TABULATION} \\ \rowsep
+\ucode{000B} & \uname{VERTICAL TABULATION} \\ \rowsep
+\ucode{000C} & \uname{FORM FEED} \\ \rowsep
+\ucode{000D} & \uname{CARRIAGE RETURN} \\ \rowsep
+\ucode{000E} & \uname{SHIFT OUT} \\ \rowsep
+\ucode{000E} & \uname{LOCKING-SHIFT ONE} \\ \rowsep
+\ucode{000F} & \uname{SHIFT IN} \\ \rowsep
+\ucode{000F} & \uname{LOCKING-SHIFT ZERO} \\ \rowsep
+\ucode{0010} & \uname{DATA LINK ESCAPE} \\ \rowsep
+\ucode{0011} & \uname{DEVICE CONTROL ONE} \\ \rowsep
+\ucode{0012} & \uname{DEVICE CONTROL TWO} \\ \rowsep
+\ucode{0013} & \uname{DEVICE CONTROL THREE} \\ \rowsep
+\ucode{0014} & \uname{DEVICE CONTROL FOUR} \\ \rowsep
+\ucode{0015} & \uname{NEGATIVE ACKNOWLEDGE} \\ \rowsep
+\ucode{0016} & \uname{SYNCHRONOUS IDLE} \\ \rowsep
+\ucode{0017} & \uname{END OF TRANSMISSION BLOCK} \\ \rowsep
+\ucode{0018} & \uname{CANCEL} \\ \rowsep
+\ucode{0019} & \uname{END OF MEDIUM} \\ \rowsep
+\ucode{001A} & \uname{SUBSTITUTE} \\ \rowsep
+\ucode{001B} & \uname{ESCAPE} \\ \rowsep
+\ucode{001C} & \uname{INFORMATION SEPARATOR FOUR} \\ \rowsep
+\ucode{001C} & \uname{FILE SEPARATOR} \\ \rowsep
+\ucode{001D} & \uname{INFORMATION SEPARATOR THREE} \\ \rowsep
+\ucode{001D} & \uname{GROUP SEPARATOR} \\ \rowsep
+\ucode{001E} & \uname{INFORMATION SEPARATOR TWO} \\ \rowsep
+\ucode{001E} & \uname{RECORD SEPARATOR} \\ \rowsep
+\ucode{001F} & \uname{INFORMATION SEPARATOR ON} \\ \rowsep
+\ucode{001F} & \uname{UNIT SEPARATOR} \\ \rowsep
+\ucode{007F} & \uname{DELETE} \\ \rowsep
+\ucode{0082} & \uname{BREAK PERMITTED HERE} \\ \rowsep
+\ucode{0083} & \uname{NO BREAK HERE} \\ \rowsep
+\ucode{0084} & \uname{INDEX} \\ \rowsep
+\ucode{0085} & \uname{NEXT LINE} \\ \rowsep
+\ucode{0086} & \uname{START OF SELECTED AREA} \\ \rowsep
+\ucode{0087} & \uname{END OF SELECTED AREA} \\ \rowsep
+\ucode{0088} & \uname{CHARACTER TABULATION SET} \\ \rowsep
+\ucode{0088} & \uname{HORIZONTAL TABULATION SET} \\ \rowsep
+\ucode{0089} & \uname{CHARACTER TABULATION WITH JUSTIFICATION} \\ \rowsep
+\ucode{0089} & \uname{HORIZONTAL TABULATION WITH JUSTIFICATION} \\ \rowsep
+\ucode{008A} & \uname{LINE TABULATION SET} \\ \rowsep
+\ucode{008A} & \uname{VERTICAL TABULATION SET} \\ \rowsep
+\ucode{008B} & \uname{PARTIAL LINE FORWARD} \\ \rowsep
+\ucode{008B} & \uname{PARTIAL LINE DOWN} \\ \rowsep
+\ucode{008C} & \uname{PARTIAL LINE BACKWARD} \\ \rowsep
+\ucode{008C} & \uname{PARTIAL LINE UP} \\ \rowsep
+\ucode{008D} & \uname{REVERSE LINE FEED} \\ \rowsep
+\ucode{008D} & \uname{REVERSE INDEX} \\ \rowsep
+\ucode{008E} & \uname{SINGLE SHIFT TWO} \\ \rowsep
+\ucode{008E} & \uname{SINGLE-SHIFT-2} \\ \rowsep
+\ucode{008F} & \uname{SINGLE SHIFT THREE} \\ \rowsep
+\ucode{008F} & \uname{SINGLE-SHIFT-3} \\ \rowsep
+\ucode{0090} & \uname{DEVICE CONTROL STRING} \\ \rowsep
+\ucode{0091} & \uname{PRIVATE USE ONE} \\ \rowsep
+\ucode{0091} & \uname{PRIVATE USE-1} \\ \rowsep
+\ucode{0092} & \uname{PRIVATE USE TWO} \\ \rowsep
+\ucode{0092} & \uname{PRIVATE USE-2} \\ \rowsep
+\ucode{0093} & \uname{SET TRANSMIT STATE} \\ \rowsep
+\ucode{0094} & \uname{CANCEL CHARACTER} \\ \rowsep
+\ucode{0095} & \uname{MESSAGE WAITING} \\ \rowsep
+\ucode{0096} & \uname{START OF GUARDED AREA} \\ \rowsep
+\ucode{0096} & \uname{START OF PROTECTED AREA} \\ \rowsep
+\ucode{0097} & \uname{END OF GUARDED AREA} \\ \rowsep
+\ucode{0097} & \uname{END OF PROTECTED AREA} \\ \rowsep
+\ucode{0098} & \uname{START OF STRING} \\ \rowsep
+\ucode{009A} & \uname{SINGLE CHARACTER INTRODUCER} \\ \rowsep
+\ucode{009B} & \uname{CONTROL SEQUENCE INTRODUCER} \\ \rowsep
+\ucode{009C} & \uname{STRING TERMINATOR} \\ \rowsep
+\ucode{009D} & \uname{OPERATING SYSTEM COMMAND} \\ \rowsep
+\ucode{009E} & \uname{PRIVACY MESSAGE} \\ \rowsep
+\ucode{009F} & \uname{APPLICATION PROGRAM COMMAND} \\
+\end{LongTable}
+
+\pnum
 If a \grammarterm{universal-character-name} outside
 the \grammarterm{c-char-sequence}, \grammarterm{s-char-sequence}, or
 \grammarterm{r-char-sequence} of
@@ -1330,7 +1467,7 @@ that cannot be represented by any of the allowed types.
 
 \begin{bnf}
 \nontermdef{conditional-escape-sequence-char}\br
-    \textnormal{any member of the basic character set that is not an} octal-digit\textnormal{, a} simple-escape-sequence-char\textnormal{, or the characters \terminal{u}, \terminal{U}, or \terminal{x}}
+\textnormal{any member of the basic character set that is not an} octal-digit\textnormal{, a} simple-escape-sequence-char\textnormal{, or the characters \terminal{N}, \terminal{u}, \terminal{U}, or \terminal{x}}
 \end{bnf}
 
 \pnum
