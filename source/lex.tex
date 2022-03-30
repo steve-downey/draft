@@ -337,15 +337,15 @@ character named by its \grammarterm{n-char-sequence}. A character is so named if
 \begin{itemize}
 \item the associated character name or associated character name alias specified in
  ISO/IEC 10646 subclause ``Code charts and lists of character names'' or
- \item the control code alias given in \tref{lex.charset.aliases}.
+\item the control code alias given in \tref{lex.charset.aliases}.
+\begin{note}
+The aliases in \tref{lex.charset.aliases} are provided for control characters
+which otherwise have no associated character name or character name alias.
+These names are derived from the Unicode Character Database's \tcode{NameAliases.txt}.
+For historical reasons, control characters are formally unnamed.
+\end{note}
 \end{itemize}
 
-\begin{note}
-The aliases in \tref{lex.charset.aliases} are provided for control characters which
-otherwise have no associated character name or character name alias. These
-names are derived from the Unicode Character Database's \tcode{NameAliases.txt}. For
-historical reasons, control characters are formally unnamed.
-\end{note}
 
 \begin{note}
 None of the associated character names, associated character name aliases, or
