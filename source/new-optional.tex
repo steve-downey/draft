@@ -482,6 +482,24 @@ The expression inside \keyword{explicit} is equivalent to:
 
 \rSec3[optional.dtor]{Destructor}
 
+\indexlibrarydtor{optional}%
+\begin{itemdecl}
+constexpr ~optional();
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\effects
+If \tcode{is_trivially_destructible_v<T> != true} and \tcode{*this} contains a value, calls
+\begin{codeblock}
+val->T::~T()
+\end{codeblock}
+
+\pnum
+\remarks
+If \tcode{is_trivially_destructible_v<T>} is \tcode{true}, then this destructor is trivial.
+\end{itemdescr}
+
 \rSec3[optional.assign]{Assignment}
 
 \indexlibrarymember{operator=}{optional}%
@@ -815,9 +833,269 @@ If an exception is thrown during the call to \tcode{T}'s constructor, \tcode{*th
 
 \rSec3[optional.swap]{Swap}
 
+\indexlibrarymember{swap}{optional}%
+\begin{itemdecl}
+constexpr void swap(optional& rhs) noexcept(@\seebelow@);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\mandates
+\tcode{is_move_constructible_v<T>} is \tcode{true}.
+
+\pnum
+\expects
+\tcode{T} meets the \oldconcept{Swappable} requirements\iref{swappable.requirements}.
+
+\pnum
+\effects
+See \tref{optional.swap}.
+\begin{lib2dtab2}{\tcode{optional::swap(optional\&)} effects}{optional.swap}
+{\tcode{*this} contains a value}
+{\tcode{*this} does not contain a value}
+
+\rowhdr{\tcode{rhs} contains a value} &
+calls \tcode{swap(*(*this), *rhs)} &
+direct-non-list-initializes the contained value of \tcode{*this}
+with \tcode{std::move(*rhs)},
+followed by \tcode{rhs.val->T::\~T()};
+postcondition is that \tcode{*this} contains a value and \tcode{rhs} does not contain a value \\
+\rowsep
+
+\rowhdr{\tcode{rhs} does not contain a value} &
+direct-non-list-initializes the contained value of \tcode{rhs}
+with \tcode{std::move(*(*this))},
+followed by \tcode{val->T::\~T()};
+postcondition is that \tcode{*this} does not contain a value and \tcode{rhs} contains a value &
+no effect \\
+\end{lib2dtab2}
+
+\pnum
+\throws
+Any exceptions thrown by the operations in the relevant part of \tref{optional.swap}.
+
+\pnum
+\remarks
+The exception specification is equivalent to:
+\begin{codeblock}
+is_nothrow_move_constructible_v<T> && is_nothrow_swappable_v<T>
+\end{codeblock}
+
+\pnum
+If any exception is thrown, the results of the expressions \tcode{this->has_value()} and \tcode{rhs.has_value()} remain unchanged.
+If an exception is thrown during the call to function \tcode{swap},
+the state of \tcode{*val} and \tcode{*rhs.val} is determined by the exception safety guarantee of \tcode{swap} for lvalues of \tcode{T}.
+If an exception is thrown during the call to \tcode{T}'s move constructor,
+the state of \tcode{*val} and \tcode{*rhs.val} is determined by the exception safety guarantee of \tcode{T}'s move constructor.
+\end{itemdescr}
+
 \rSec3[optional.iterators]{Iterator support}
 
+\indexlibrarymember{iterator}{optional}%
+\indexlibrarymember{const_iterator}{optional}%
+\begin{itemdecl}
+using iterator       = @\impdef@;
+using const_iterator = @\impdef@;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+These types
+model \libconcept{contiguous_iterator}\iref{iterator.concept.contiguous},
+meet the \oldconcept{RandomAccessIterator} requirements\iref{random.access.iterators}, and
+meet the requirements for constexpr iterators\iref{iterator.requirements.general},
+with value type \tcode{remove_cv_t<T>}.
+The reference type is \tcode{T\&} for \tcode{iterator} and
+\tcode{const T\&} for \tcode{const_iterator}.
+
+\pnum
+All requirements on container iterators\iref{container.reqmts} apply to
+\tcode{optional::iterator} and \tcode{optional::\linebreak{}const_iterator} as well.
+
+\pnum
+Any operation that initializes or destroys the contained value of an optional object invalidates all iterators into that object.
+\end{itemdescr}
+
+\indexlibrarymember{begin}{optional}%
+\begin{itemdecl}
+constexpr iterator begin() noexcept;
+constexpr const_iterator begin() const noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+If \tcode{has_value()} is \tcode{true},
+an iterator referring to the contained value.
+Otherwise, a past-the-end iterator value.
+\end{itemdescr}
+
+\indexlibrarymember{end}{optional}%
+\begin{itemdecl}
+constexpr iterator end() noexcept;
+constexpr const_iterator end() const noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+\tcode{begin() + has_value()}.
+\end{itemdescr}
+
 \rSec3[optional.observe]{Observers}
+
+\indexlibrarymember{operator->}{optional}%
+\begin{itemdecl}
+constexpr const T* operator->() const noexcept;
+constexpr T* operator->() noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\hardexpects
+\tcode{has_value()} is \tcode{true}.
+
+\pnum
+\returns
+\tcode{val}.
+
+\pnum
+\remarks
+These functions are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator*}{optional}%
+\begin{itemdecl}
+constexpr const T& operator*() const & noexcept;
+constexpr T& operator*() & noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\hardexpects
+\tcode{has_value()} is \tcode{true}.
+
+\pnum
+\returns
+\tcode{*val}.
+
+\pnum
+\remarks
+These functions are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator*}{optional}%
+\begin{itemdecl}
+constexpr T&& operator*() && noexcept;
+constexpr const T&& operator*() const && noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\hardexpects
+\tcode{has_value()} is \tcode{true}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return std::move(*val);}
+\end{itemdescr}
+
+\indexlibrarymember{operator bool}{optional}%
+\begin{itemdecl}
+constexpr explicit operator bool() const noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+\tcode{true} if and only if \tcode{*this} contains a value.
+
+\pnum
+\remarks
+This function is a constexpr function.
+\end{itemdescr}
+
+\indexlibrarymember{has_value}{optional}%
+\begin{itemdecl}
+constexpr bool has_value() const noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+\tcode{true} if and only if \tcode{*this} contains a value.
+
+\pnum
+\remarks
+This function is a constexpr function.
+\end{itemdescr}
+
+\indexlibrarymember{value}{optional}%
+\begin{itemdecl}
+constexpr const T& value() const &;
+constexpr T& value() &;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\effects
+Equivalent to:
+\begin{codeblock}
+return has_value() ? *val : throw bad_optional_access();
+\end{codeblock}
+\end{itemdescr}
+
+\indexlibrarymember{value}{optional}%
+\begin{itemdecl}
+constexpr T&& value() &&;
+constexpr const T&& value() const &&;
+\end{itemdecl}
+
+\begin{itemdescr}
+
+\pnum
+\effects
+Equivalent to:
+\begin{codeblock}
+return has_value() ? std::move(*val) : throw bad_optional_access();
+\end{codeblock}
+\end{itemdescr}
+
+\indexlibrarymember{value_or}{optional}%
+\begin{itemdecl}
+template<class U = remove_cv_t<T>> constexpr T value_or(U&& v) const &;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\mandates
+\tcode{is_copy_constructible_v<T> \&\& is_convertible_v<U\&\&, T>} is \tcode{true}.
+
+\pnum
+\effects
+Equivalent to:
+\begin{codeblock}
+return has_value() ? **this : static_cast<T>(std::forward<U>(v));
+\end{codeblock}
+\end{itemdescr}
+
+\indexlibrarymember{value_or}{optional}%
+\begin{itemdecl}
+template<class U = remove_cv_t<T>> constexpr T value_or(U&& v) &&;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\mandates
+\tcode{is_move_constructible_v<T> \&\& is_convertible_v<U\&\&, T>} is \tcode{true}.
+
+\pnum
+\effects
+Equivalent to:
+\begin{codeblock}
+return has_value() ? std::move(**this) : static_cast<T>(std::forward<U>(v));
+\end{codeblock}
+\end{itemdescr}
 
 \rSec3[optional.monadic]{Monadic operations}
 
@@ -1000,6 +1278,22 @@ if (*this) {
 \end{itemdescr}
 
 \rSec3[optional.mod]{Modifiers}
+
+\indexlibrarymember{reset}{optional}%
+\begin{itemdecl}
+constexpr void reset() noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\effects
+If \tcode{*this} contains a value, calls \tcode{val->T::\~T()} to destroy the contained value;
+otherwise no effect.
+
+\pnum
+\ensures
+\tcode{*this} does not contain a value.
+\end{itemdescr}
 
 \begin{addedblock}
 \rSec2[optional.optional.ref]{Partial specialization of \tcode{optional} for reference types}
@@ -1558,8 +1852,463 @@ constexpr void @\exposid{convert-ref-init-val}@(U&& u);  // \expos
 \end{addedblock}
 
 \rSec2[optional.nullopt]{No-value state indicator}
+
+\indexlibraryglobal{nullopt_t}%
+\indexlibraryglobal{nullopt}%
+\begin{itemdecl}
+struct nullopt_t{@\seebelow@};
+inline constexpr nullopt_t nullopt(@\unspec@);
+\end{itemdecl}
+
+\pnum
+The struct \tcode{nullopt_t} is an empty class type used as a unique type to indicate the state of not containing a value for \tcode{optional} objects.
+In particular, \tcode{optional<T>} has a constructor with \tcode{nullopt_t} as a single argument;
+this indicates that an optional object not containing a value shall be constructed.
+
+\pnum
+Type \tcode{nullopt_t} shall not have a default constructor or an initializer-list constructor, and shall not be an aggregate.
+
 \rSec2[optional.bad.access]{Class \tcode{bad_optional_access}}
+
+\begin{codeblock}
+namespace std {
+  class bad_optional_access : public exception {
+  public:
+    // see \ref{exception} for the specification of the special member functions
+    constexpr const char* what() const noexcept override;
+  };
+}
+\end{codeblock}
+
+\pnum
+The class \tcode{bad_optional_access} defines the type of objects thrown as exceptions to report the situation where an attempt is made to access the value of an optional object that does not contain a value.
+
+\indexlibrarymember{what}{bad_optional_access}%
+\begin{itemdecl}
+constexpr const char* what() const noexcept override;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+An \impldef{return value of \tcode{bad_optional_access::what}} \ntbs{},
+which during constant evaluation is encoded with
+the ordinary literal encoding\iref{lex.ccon}.
+\end{itemdescr}
+
 \rSec2[optional.relops]{Relational operators}
+
+\indexlibrarymember{operator==}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator==(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+The expression \tcode{*x == *y} is well-formed and
+its result is convertible to \tcode{bool}.
+\begin{note}
+\tcode{T} need not be \oldconcept{EqualityComparable}.
+\end{note}
+
+\pnum
+\returns
+If \tcode{x.has_value() != y.has_value()}, \tcode{false}; otherwise if \tcode{x.has_value() == false}, \tcode{true}; otherwise \tcode{*x == *y}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x == *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator"!=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator!=(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+The expression \tcode{*x != *y} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\returns
+If \tcode{x.has_value() != y.has_value()}, \tcode{true};
+otherwise, if \tcode{x.has_value() == false}, \tcode{false};
+otherwise \tcode{*x != *y}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x != *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator<}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator<(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{*x < *y} is well-formed
+and its result is convertible to \tcode{bool}.
+
+\pnum
+\returns
+If \tcode{!y}, \tcode{false};
+otherwise, if \tcode{!x}, \tcode{true};
+otherwise \tcode{*x < *y}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x < *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator>}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator>(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+The expression \tcode{*x > *y} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\returns
+If \tcode{!x}, \tcode{false};
+otherwise, if \tcode{!y}, \tcode{true};
+otherwise \tcode{*x > *y}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x > *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator<=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator<=(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+The expression \tcode{*x <= *y} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\returns
+If \tcode{!x}, \tcode{true};
+otherwise, if \tcode{!y}, \tcode{false};
+otherwise \tcode{*x <= *y}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x <= *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator>=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator>=(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+The expression \tcode{*x >= *y} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\returns
+If \tcode{!y}, \tcode{true};
+otherwise, if \tcode{!x}, \tcode{false};
+otherwise \tcode{*x >= *y}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x >= *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\indexlibrarymember{operator<=>}{optional}%
+\begin{itemdecl}
+template<class T, @\libconcept{three_way_comparable_with}@<T> U>
+  constexpr compare_three_way_result_t<T, U>
+    operator<=>(const optional<T>& x, const optional<U>& y);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+If \tcode{x \&\& y}, \tcode{*x <=> *y}; otherwise \tcode{x.has_value() <=> y.has_value()}.
+
+\pnum
+\remarks
+Specializations of this function template
+for which \tcode{*x <=> *y} is a core constant expression
+are constexpr functions.
+\end{itemdescr}
+
+\rSec2[optional.nullops]{Comparison with \tcode{nullopt}}
+
+\indexlibrarymember{operator==}{optional}%
+\begin{itemdecl}
+template<class T> constexpr bool operator==(const optional<T>& x, nullopt_t) noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+\tcode{!x}.
+\end{itemdescr}
+
+\indexlibrarymember{operator<=>}{optional}%
+\begin{itemdecl}
+template<class T> constexpr strong_ordering operator<=>(const optional<T>& x, nullopt_t) noexcept;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\returns
+\tcode{x.has_value() <=> false}.
+\end{itemdescr}
+
+\rSec2[optional.comp.with.t]{Comparison with \tcode{T}}
+
+\indexlibrarymember{operator==}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator==(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{U} is not a specialization of \tcode{optional}.
+The expression \tcode{*x == v} is well-formed and
+its result is convertible to \tcode{bool}.
+\begin{note}
+\tcode{T} need not be \oldconcept{EqualityComparable}.
+\end{note}
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x == v : false;}
+\end{itemdescr}
+
+\indexlibrarymember{operator==}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator==(const T& v, const optional<U>& x);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{T} is not a specialization of \tcode{optional}.
+The expression \tcode{v == *x} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? v == *x : false;}
+\end{itemdescr}
+
+\indexlibrarymember{operator"!=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator!=(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{U} is not a specialization of \tcode{optional}.
+The expression \tcode{*x != v} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x != v : true;}
+\end{itemdescr}
+
+\indexlibrarymember{operator"!=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator!=(const T& v, const optional<U>& x);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{T} is not a specialization of \tcode{optional}.
+The expression \tcode{v != *x} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? v != *x : true;}
+\end{itemdescr}
+
+\indexlibrarymember{operator<}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator<(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{U} is not a specialization of \tcode{optional}.
+The expression \tcode{*x < v} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x < v : true;}
+\end{itemdescr}
+
+\indexlibrarymember{operator<}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator<(const T& v, const optional<U>& x);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{T} is not a specialization of \tcode{optional}.
+The expression \tcode{v < *x} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? v < *x : false;}
+\end{itemdescr}
+
+\indexlibrarymember{operator>}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator>(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{U} is not a specialization of \tcode{optional}.
+The expression \tcode{*x > v} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x > v : false;}
+\end{itemdescr}
+
+\indexlibrarymember{operator>}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator>(const T& v, const optional<U>& x);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{T} is not a specialization of \tcode{optional}.
+The expression \tcode{v > *x} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? v > *x : true;}
+\end{itemdescr}
+
+\indexlibrarymember{operator<=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator<=(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{U} is not a specialization of \tcode{optional}.
+The expression \tcode{*x <= v} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x <= v : true;}
+\end{itemdescr}
+
+\indexlibrarymember{operator<=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator<=(const T& v, const optional<U>& x);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{T} is not a specialization of \tcode{optional}.
+The expression \tcode{v <= *x} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? v <= *x : false;}
+\end{itemdescr}
+
+\indexlibrarymember{operator>=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator>=(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{U} is not a specialization of \tcode{optional}.
+The expression \tcode{*x >= v} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x >= v : false;}
+\end{itemdescr}
+
+\indexlibrarymember{operator>=}{optional}%
+\begin{itemdecl}
+template<class T, class U> constexpr bool operator>=(const T& v, const optional<U>& x);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\constraints
+\tcode{T} is not a specialization of \tcode{optional}.
+The expression \tcode{v >= *x} is well-formed and
+its result is convertible to \tcode{bool}.
+
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? v >= *x : true;}
+\end{itemdescr}
+
+\indexlibrarymember{operator<=>}{optional}%
+\begin{itemdecl}
+template<class T, class U>
+    requires (!@\exposconcept{is-derived-from-optional}@<U>) && @\libconcept{three_way_comparable_with}@<T, U>
+  constexpr compare_three_way_result_t<T, U>
+    operator<=>(const optional<T>& x, const U& v);
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+\effects
+Equivalent to: \tcode{return x.has_value() ? *x <=> v : strong_ordering::less;}
+\end{itemdescr}
+
 \rSec2[optional.specalg]{Specialized algorithms}
 \indexlibrarymember{swap}{optional}%
 \begin{itemdecl}
@@ -1631,6 +2380,22 @@ Equivalent to: \tcode{return optional<T>(in_place, il, std::forward<Args>(args).
 
 
 \rSec2[optional.hash]{Hash support}
+
+\indexlibrarymember{hash}{optional}%
+\begin{itemdecl}
+template<class T> struct hash<optional<T>>;
+\end{itemdecl}
+
+\begin{itemdescr}
+\pnum
+The specialization \tcode{hash<optional<T>>} is enabled\iref{unord.hash}
+if and only if \tcode{hash<remove_const_t<T>>} is enabled.
+When enabled, for an object \tcode{o} of type \tcode{optional<T>},
+if \tcode{o.has_value() == true}, then \tcode{hash<optional<T>>()(o)}
+evaluates to the same value as \tcode{hash<remove_const_t<T>>()(*o)};
+otherwise it evaluates to an unspecified value.
+The member functions are not guaranteed to be \keyword{noexcept}.
+\end{itemdescr}
 
 \begin{addedblock}
 \Sec2[version.syn]{Feature-test macro}
