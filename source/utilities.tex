@@ -4531,19 +4531,19 @@ constexpr explicit optional(in_place_t, Arg&& arg);
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-  \item \tcode{is_constructible_v<T\&, Arg>} is \tcode{true}, and
-  \item \tcode{reference_constructs_from_temporary_v<T\&, Arg>} is \tcode{false}.
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_constructible_v<T\&, Arg>} is \tcode{true}, and
+\item \tcode{reference_constructs_from_temporary_v<T\&, Arg>} is \tcode{false}.
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to: \tcode{\exposid{convert-ref-init-val}(std::forward<Arg>(arg))}.
 
 \pnum
-  \ensures
-  \tcode{*this} contains a value.
+\ensures
+\tcode{*this} contains a value.
 \end{itemdescr}
 
 \begin{itemdecl}
@@ -4554,23 +4554,23 @@ optional(U&& u) noexcept(is_nothrow_constructible_v<T&, U>);
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-  \item \tcode{is_same_v<remove_cvref_t<U>, optional>} is \tcode{false},
-  \item \tcode{is_same_v<remove_cvref_t<U>, in_place_t>} is \tcode{false}, and
-  \item \tcode{is_constructible_v<T\&, U>} is \tcode{true}.
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_same_v<remove_cvref_t<U>, optional>} is \tcode{false},
+\item \tcode{is_same_v<remove_cvref_t<U>, in_place_t>} is \tcode{false}, and
+\item \tcode{is_constructible_v<T\&, U>} is \tcode{true}.
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to: \tcode{\exposid{convert-ref-init-val}(std::forward<U>(u))}.
 
 \pnum
-  \ensures
-  \tcode{*this} contains a value.
+\ensures
+\tcode{*this} contains a value.
 
 \pnum
-  \remarks
+\remarks
   This constructor is defined as deleted if
 \begin{codeblock}
 reference_constructs_from_temporary_v<T&, U>
@@ -4586,22 +4586,22 @@ optional(optional<U>& rhs) noexcept(is_nothrow_constructible_v<T&, U&>);
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-  \item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false},
-  \item \tcode{is_same_v<T\&, U>} is \tcode{false}, and
-  \item \tcode{is_constructible_v<T\&, U\&>} is \tcode{true}.
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false},
+\item \tcode{is_same_v<T\&, U>} is \tcode{false}, and
+\item \tcode{is_constructible_v<T\&, U\&>} is \tcode{true}.
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 if (rhs.has_value()) @\exposid{convert-ref-init-val}@(*rhs);
 \end{codeblock}
 
 \pnum
-  \remarks
+\remarks
   This constructor is defined as deleted if
 \begin{codeblock}
 reference_constructs_from_temporary_v<T&, U&>
@@ -4618,15 +4618,15 @@ optional(const optional<U>& rhs) noexcept(is_nothrow_constructible_v<T&, const U
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-  \item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false},
-  \item \tcode{is_same_v<T\&, U>} is \tcode{false}, and
-  \item \tcode{is_constructible_v<T\&, const U\&>} is \tcode{true}.
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false},
+\item \tcode{is_same_v<T\&, U>} is \tcode{false}, and
+\item \tcode{is_constructible_v<T\&, const U\&>} is \tcode{true}.
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 if (rhs.has_value()) @\exposid{convert-ref-init-val}@(*rhs);
@@ -4634,7 +4634,7 @@ if (rhs.has_value()) @\exposid{convert-ref-init-val}@(*rhs);
 
 
 \pnum
-  \remarks
+\remarks
   This constructor is defined as deleted if
 \begin{codeblock}
 reference_constructs_from_temporary_v<T&, const U&>
@@ -4650,22 +4650,22 @@ optional(optional<U>&& rhs) noexcept(is_nothrow_constructible_v<T&, U>);
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-  \item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false},
-  \item \tcode{is_same_v<T\&, U>} is \tcode{false}, and
-  \item \tcode{is_constructible_v<T\&, U>} is \tcode{true}.
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false},
+\item \tcode{is_same_v<T\&, U>} is \tcode{false}, and
+\item \tcode{is_constructible_v<T\&, U>} is \tcode{true}.
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 if (rhs.has_value()) @\exposid{convert-ref-init-val}@(*std::move(rhs));
 \end{codeblock}
 
 \pnum
-  \remarks
+\remarks
   This constructor is defined as deleted if
 \begin{codeblock}
 reference_constructs_from_temporary_v<T&, U>
@@ -4681,22 +4681,22 @@ optional(const optional<U>&& rhs) noexcept(is_nothrow_constructible_v<T&, const 
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-  \item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false}, and
-  \item \tcode{is_same_v<T\&, U>} is \tcode{false}.
-  \item \tcode{is_constructible_v<T\&, const U>} is \tcode{true},
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_same_v<remove_cv_t<T>, optional<U>>} is \tcode{false}, and
+\item \tcode{is_same_v<T\&, U>} is \tcode{false}.
+\item \tcode{is_constructible_v<T\&, const U>} is \tcode{true},
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 if (rhs.has_value()) @\exposid{convert-ref-init-val}@(*std::move(rhs));
 \end{codeblock}
 
 \pnum
-  \remarks
+\remarks
   This constructor is defined as deleted if
 \begin{codeblock}
 reference_constructs_from_temporary_v<T&, const U>
@@ -4713,16 +4713,16 @@ constexpr optional& operator=(nullopt_t) noexcept;
 
 \begin{itemdescr}
 \pnum
-  \effects
+\effects
   Assigns \tcode{nullptr} to \exposid{val}.
 
 \pnum
-  \ensures
-  \tcode{*this} does not contain a value.
+\ensures
+\tcode{*this} does not contain a value.
 
 \pnum
-  \returns
-  \tcode{*this}.
+\returns
+\tcode{*this}.
 \end{itemdescr}
 
 
@@ -4733,14 +4733,14 @@ constexpr T& emplace(U&& u) noexcept(is_nothrow_constructible_v<T&, U>);
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \begin{itemize}
-    \item \tcode{is_constructible_v<T\&, U>} is \tcode{true}, and
-    \item \tcode{reference_constructs_from_temporary_v<T\&, U>} is \tcode{false}.
-  \end{itemize}
+\constraints
+\begin{itemize}
+\item \tcode{is_constructible_v<T\&, U>} is \tcode{true}, and
+\item \tcode{reference_constructs_from_temporary_v<T\&, U>} is \tcode{false}.
+\end{itemize}
 
 \pnum
-  \effects
+\effects
   Equivalent to: \tcode{\exposid{convert-ref-init-val}(std::forward<U>(u))}.
 
 \pnum
@@ -4755,7 +4755,7 @@ constexpr void swap(optional& rhs) noexcept;
 
 \begin{itemdescr}
 \pnum
-  \effects
+\effects
   Equivalent to: \tcode{swap(\exposid{val}, rhs.\exposid{val})}.
 \end{itemdescr}
 
@@ -4787,7 +4787,7 @@ constexpr iterator begin() const noexcept;
 
 \begin{itemdescr}
 \pnum
-  \returns
+\returns
   If \tcode{has_value()} is \tcode{true},
   an iterator referring to \tcode{*\exposid{val}}.
   Otherwise, a past-the-end iterator value.
@@ -4814,12 +4814,12 @@ constexpr T* operator->() const noexcept;
 
 \begin{itemdescr}
 \pnum
-  \hardexpects
-  \tcode{has_value()} is \tcode{true}.
+\hardexpects
+\tcode{has_value()} is \tcode{true}.
 
 \pnum
-  \returns
-  \exposid{val}.
+\returns
+\exposid{val}.
 
 \end{itemdescr}
 
@@ -4829,12 +4829,12 @@ constexpr T& operator*() const noexcept;
 
 \begin{itemdescr}
 \pnum
-   \hardexpects
-   \tcode{has_value()} is \tcode{true}.
+\hardexpects
+\tcode{has_value()} is \tcode{true}.
 
 \pnum
-   \returns
-   \tcode{*\exposid{val}}.
+\returns
+\tcode{*\exposid{val}}.
 
 \end{itemdescr}
 
@@ -4844,8 +4844,8 @@ constexpr explicit operator bool() const noexcept;
 
 \begin{itemdescr}
 \pnum
-  \returns
-  \tcode{\exposid{val} != nullptr}.
+\returns
+\tcode{\exposid{val} != nullptr}.
 \end{itemdescr}
 
 \begin{itemdecl}
@@ -4854,8 +4854,8 @@ constexpr bool has_value() const noexcept;
 
 \begin{itemdescr}
 \pnum
-  \returns
-  \tcode{\exposid{val} != nullptr}.
+\returns
+\tcode{\exposid{val} != nullptr}.
 \end{itemdescr}
 
 \begin{itemdecl}
@@ -4864,7 +4864,7 @@ constexpr T& value() const;
 
 \begin{itemdescr}
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 return has_value() ? *@\exposid{val}@ : throw bad_optional_access();
@@ -4880,11 +4880,11 @@ template<class U = remove_cv_t<T>> constexpr remove_cv_t<T> value_or(U&& u) cons
   Let \tcode{X} be \tcode{remove_cv_t<T>}.
 
 \pnum
-  \mandates
-    \tcode{is_constructible_v<X, T\&> \&\& is_convertible_v<U, X>} is \tcode{true}.
+\mandates
+\tcode{is_constructible_v<X, T\&> \&\& is_convertible_v<U, X>} is \tcode{true}.
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 return has_value() ? *@\exposid{val}@ : static_cast<X>(std::forward<U>(u));
@@ -4904,11 +4904,11 @@ constexpr auto and_then(F&& f) const;
   Let \tcode{U} be \tcode{invoke_result_t<F, T\&>}.
 
 \pnum
-  \mandates
-  \tcode{remove_cvref_t<U>} is a specialization of \tcode{optional}.
+\mandates
+\tcode{remove_cvref_t<U>} is a specialization of \tcode{optional}.
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 if (has_value())
@@ -4928,7 +4928,7 @@ constexpr optional<remove_cv_t<invoke_result_t<F, T&>>> transform(F&& f) const;
   Let \tcode{U} be \tcode{remove_cv_t<invoke_result_t<F, T\&>>}.
 
 \pnum
-  \mandates
+\mandates
   The declaration
 \begin{codeblock}
 U u(invoke(std::forward<F>(f), *@\exposid{val}@));
@@ -4939,7 +4939,7 @@ There is no requirement that \tcode{U} is movable\iref{dcl.init.general}.
 \end{note}
 
 \pnum
-  \returns
+\returns
   If \tcode{*this} contains a value, an \tcode{optional<U>} object
   whose contained value is direct-non-list-initialized with
   \tcode{invoke(std::forward<F>(f), *\exposid{val})};
@@ -4953,15 +4953,15 @@ constexpr optional or_else(F&& f) const;
 
 \begin{itemdescr}
 \pnum
-  \constraints
-  \tcode{F} models \tcode{\libconcept{invocable}}.
+\constraints
+\tcode{F} models \tcode{\libconcept{invocable}}.
 
 \pnum
-  \mandates
-  \tcode{is_same_v<remove_cvref_t<invoke_result_t<F>>, optional>} is \tcode{true}.
+\mandates
+\tcode{is_same_v<remove_cvref_t<invoke_result_t<F>>, optional>} is \tcode{true}.
 
 \pnum
-  \effects
+\effects
   Equivalent to:
 \begin{codeblock}
 if (has_value())
@@ -4980,12 +4980,12 @@ constexpr void reset() noexcept;
 
 \begin{itemdescr}
 \pnum
-  \effects
+\effects
   Assigns \tcode{nullptr} to \exposid{val}.
 
 \pnum
-  \ensures
-  \tcode{*this} does not contain a value.
+\ensures
+\tcode{*this} does not contain a value.
 \end{itemdescr}
 
 \rSec3[optional.ref.expos]{Exposition only helper functions}
@@ -4996,7 +4996,7 @@ constexpr void @\exposid{convert-ref-init-val}@(U&& u);  // \expos
 
 \begin{itemdescr}
 \pnum
-  \effects
+\effects
   Creates a variable \tcode{r} as if by \tcode{T\& r(std::forward<U>(u));} and then initializes \exposid{val} with \tcode{addressof(r)}.
 \end{itemdescr}
 
